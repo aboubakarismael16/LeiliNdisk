@@ -3,6 +3,10 @@ package main
 import (
 	cfg "LeiliNetdisk/config"
 	"LeiliNetdisk/route"
+	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func startApiService() {
@@ -11,9 +15,12 @@ func startApiService() {
 }
 
 func main() {
-	// api 服务
-	go startApiService()
 
-	// rpc 服务
-	//startRpcService()
+	pwd, _ := os.Getwd()
+	fmt.Println(pwd + " " + os.Args[0])
+	http.Handle("/static/", http.FileServer(http.Dir(filepath.Join(pwd, "./"))))
+
+	router := route.Router()
+	router.Run(cfg.UploadServiceHost)
+
 }
