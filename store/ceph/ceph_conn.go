@@ -45,6 +45,3 @@ func GetCephBucket(bucket string) *s3.Bucket {
 func PutObject(bucket string, path string, data []byte) error {
 	return GetCephBucket(bucket).Put(path, data, "octet-stream", s3.PublicRead)
 }
-
-
-

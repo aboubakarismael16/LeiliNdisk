@@ -10,31 +10,31 @@ var conn *amqp.Connection
 var channel *amqp.Channel
 
 // 如果异常关闭，会接收通知
-var notifyClose chan *amqp.Error
+var NotifyClose chan *amqp.Error
 
 func init() {
 	// 是否开启异步转移功能，开启时才初始化rabbitMQ连接
 	if !config.AsyncTransferEnable {
 		return
 	}
-	if initChannel() {
-		channel.NotifyClose(notifyClose)
+	if InitChannel() {
+		channel.NotifyClose(NotifyClose)
 	}
 	// 断线自动重连
 	go func() {
 		for {
 			select {
-			case msg := <-notifyClose:
+			case msg := <-NotifyClose:
 				conn = nil
 				channel = nil
 				log.Printf("onNotifyChannelClosed: %+v\n", msg)
-				initChannel()
+				InitChannel()
 			}
 		}
 	}()
 }
 
-func initChannel() bool {
+func InitChannel() bool {
 	if channel != nil {
 		return true
 	}
@@ -55,7 +55,7 @@ func initChannel() bool {
 
 // Publish : 发布消息
 func Publish(exchange, routingKey string, msg []byte) bool {
-	if !initChannel() {
+	if !InitChannel() {
 		return false
 	}
 

@@ -27,6 +27,7 @@ func StartConsume(qName, cName string, callback func(msg []byte) bool) {
 			processErr := callback(d.Body)
 			if processErr {
 				// TODO: 将任务写入错误队列，待后续处理
+				log.Println("todo:需要将信息传递到错误队列中去，等待后续的处理 ")
 			}
 		}
 	}()

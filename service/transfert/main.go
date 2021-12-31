@@ -1,49 +1,53 @@
 package main
 
 import (
+	"LeiliNetdisk/common"
 	"LeiliNetdisk/config"
-	dblayer "LeiliNetdisk/db"
 	"LeiliNetdisk/mq"
-	"LeiliNetdisk/store/oss"
-	"bufio"
-	"encoding/json"
+	dbproxy "LeiliNetdisk/service/dbproxy/client"
+	"LeiliNetdisk/service/transfert/process"
+	"github.com/micro/cli"
+	"github.com/micro/go-micro"
 	"log"
-	"os"
+	"time"
 )
 
-// ProcessTransfer : 处理文件转移
-func ProcessTransfer(msg []byte) bool {
-	log.Println(string(msg))
+func main() {
+	// 文件转移服务
+	go startTransferService()
 
-	pubData := mq.TransferData{}
-	err := json.Unmarshal(msg, &pubData)
-	if err != nil {
-		log.Println(err.Error())
-		return false
-	}
-
-	fin, err := os.Open(pubData.CurLocation)
-	if err != nil {
-		log.Println(err.Error())
-		return false
-	}
-
-	err = oss.Bucket().PutObject(
-		pubData.DestLocation,
-		bufio.NewReader(fin))
-	if err != nil {
-		log.Println(err.Error())
-		return false
-	}
-
-	_ = dblayer.UpdateFileLocation(
-		pubData.FileHash,
-		pubData.DestLocation)
-	return true
+	// rpc 服务
+	startRPCService()
 }
 
+func startRPCService() {
+	service := micro.NewService(
+		micro.Name("go.micro.service.transfer"),
+		micro.RegisterTTL(time.Second*10),
+		micro.RegisterInterval(time.Second*5),
+		micro.Flags(common.CustomFlags...))
+	service.Init(
+		micro.Action(func(context *cli.Context) {
+			//检查是否有指定的mqHost
+			mqhost := context.String("mqhost")
+			if len(mqhost) > 0 {
+				log.Println("custom mq address: " + mqhost)
+				mq.UpdateRabbitHost(mqhost)
+			}
+		}),
+	)
 
-func main() {
+	//初始化dbproxy client
+	dbproxy.Init(service)
+	//初始化mq client
+	mq.Init()
+
+	if err := service.Run(); err != nil {
+		log.Println(err)
+	}
+}
+
+func startTransferService() {
 	if !config.AsyncTransferEnable {
 		log.Println("异步转移文件功能目前被禁用，请检查相关配置")
 		return
@@ -51,6 +55,5 @@ func main() {
 	log.Println("文件转移服务启动中，开始监听转移任务队列...")
 	mq.StartConsume(
 		config.TransOSSQueueName,
-		"transfer_oss",
-		ProcessTransfer)
+		"transfer_oss", process.Transfer)
 }
