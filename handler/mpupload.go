@@ -181,3 +181,9 @@ func CompleteUploadHandler(c *gin.Context) {
 			"data": nil,
 		})
 }
+
+//TODO:取消上传分块
+func CancelUploadPartHandler(c *gin.Context) {}
+
+//TODO：查看文件上传的整体状态
+func MultipartUploadStatusHanlder(c *gin.Context) {}
