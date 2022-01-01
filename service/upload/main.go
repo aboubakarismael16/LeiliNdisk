@@ -6,7 +6,8 @@ import (
 	"LeiliNetdisk/mq"
 	"LeiliNetdisk/route"
 	dbproxy "LeiliNetdisk/service/dbproxy/client"
-	//upRpc "LeiliNetdisk/service/upload/rpc"
+	upProto "LeiliNetdisk/service/upload/proto"
+	upRpc "LeiliNetdisk/service/upload/rpc"
 	"fmt"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
@@ -16,6 +17,7 @@ import (
 
 func main() {
 	startAPIService()
+	startRPCService()
 }
 
 //startAPIService:启动 api 服务
@@ -47,8 +49,8 @@ func startRPCService() {
 	// 初始化mq client
 	mq.Init()
 	//TODO:
-	//upProto.RegisterUploadServiceHandler(service.Server(), new(upRpc.Upload))
-	//if err := service.Run(); err != nil {
-	//	fmt.Println(err)
-	//}
+	upProto.RegisterUploadServiceHandler(service.Server(), new(upRpc.Upload))
+	if err := service.Run(); err != nil {
+		fmt.Println(err)
+	}
 }

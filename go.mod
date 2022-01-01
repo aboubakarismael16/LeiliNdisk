@@ -1,6 +1,6 @@
 module LeiliNetdisk
 
-go 1.16
+go 1.13
 
 require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.0+incompatible
@@ -33,7 +33,7 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lucas-clemente/quic-go v0.14.1 // indirect
+	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/marten-seemann/chacha20 v0.2.0 // indirect
 	github.com/marten-seemann/qtls v0.4.1 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
@@ -59,13 +59,11 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	//golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
 	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
-	golang.org/x/sys v0.0.0-20210423082822-04245dca01da // indirect
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
 	//golang.org/x/tools v0.0.0-20191216173652-a0e659d51361 // indirect
 	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1 // indirect
 	google.golang.org/grpc v1.26.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
 	honnef.co/go/tools v0.0.1-2019.2.3 // indirect
 )

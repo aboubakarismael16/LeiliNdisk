@@ -3,7 +3,7 @@ package handler
 import (
 	cmn "LeiliNetdisk/common"
 	cfg "LeiliNetdisk/config"
-	_ "LeiliNetdisk/service/account/proto"
+	"LeiliNetdisk/service/account/proto"
 	"LeiliNetdisk/util"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro"
@@ -14,7 +14,7 @@ import (
 
 
 var (
-	userCli go_micro_service_user.UserService
+	userCli proto.UserService
 )
 
 func init() {
@@ -33,7 +33,7 @@ func init() {
 	service.Init()
 
 	// 创建 userClient 客户端
-	userCli = go_micro_service_user.NewUserService("go.micro.service.user", service.Client())
+	userCli = proto.NewUserService("go.micro.service.user", service.Client())
 }
 
 //SignupInHandler：处理用户注册GET请求
@@ -46,7 +46,7 @@ func DoSignupHandler(c *gin.Context) {
 	username := c.Request.FormValue("username")
 	passwd := c.Request.FormValue("password")
 
-	resp, err := userCli.Signup(context.TODO(), &go_micro_service_user.ReqSignUp{
+	resp, err := userCli.Signup(context.TODO(), &proto.ReqSignup{
 		Username: username,
 		Password: passwd,
 	})
@@ -72,7 +72,7 @@ func DoSigninHandler(c *gin.Context) {
 	password := c.Request.FormValue("password")
 	encPassword := util.Sha1([]byte(password + cfg.PasswordSalt))
 
-	rpcResp, err := userCli.Signin(context.TODO(), &go_micro_service_user.ReqSignIn{
+	rpcResp, err := userCli.Signin(context.TODO(), &proto.ReqSignin{
 		Username: username,
 		Password: encPassword,
 	})
@@ -116,7 +116,7 @@ func UserInfoHandler(c *gin.Context) {
 	//1.解析参数
 	username := c.Request.FormValue("username")
 	//2.查询用户信息
-	resp, err := userCli.UserInfo(context.TODO(), &go_micro_service_user.ReqUserInfo{
+	resp, err := userCli.UserInfo(context.TODO(), &proto.ReqUserInfo{
 		Username: username,
 	})
 	if err != nil {

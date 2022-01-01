@@ -1,22 +1,20 @@
 package handler
 
 import (
+	go_micro_service_user "LeiliNetdisk/service/account/proto"
 	"context"
+	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
-
-	userProto "LeiliNetdisk/service/account/proto"
 )
 
-// FileQueryHandler : 查询批量的文件元信息
+//QueryFileHandler:获取文件元信息
 func FileQueryHandler(c *gin.Context) {
-	limitCnt, _ := strconv.Atoi(c.Request.FormValue("limit"))
 	username := c.Request.FormValue("username")
-
-	rpcResp, err := userCli.UserFiles(context.TODO(), &userProto.ReqUserFile{
+	limitCnt, _ := strconv.Atoi(c.Request.FormValue("limit"))
+	rpcResp, err := userCli.UserFiles(context.TODO(), &go_micro_service_user.ReqUserFile{
 		Username: username,
 		Limit:    int32(limitCnt),
 	})
@@ -27,13 +25,16 @@ func FileQueryHandler(c *gin.Context) {
 		return
 	}
 
-	if len(rpcResp.FileData) <= 0 {
-		rpcResp.FileData = []byte("[]")
+	data, err := json.Marshal(rpcResp)
+	if err != nil {
+		log.Println(err.Error())
+		c.Status(http.StatusInternalServerError)
+		return
 	}
-	c.Data(http.StatusOK, "application/json", rpcResp.FileData)
+	c.Data(http.StatusOK, "application/json", data)
 }
 
-// FileMetaUpdateHandler ： 更新元信息接口(重命名)
+//FileMetaUpdateHandler: 更新元文件信息接口(重命名)  TODO:需要修改
 func FileMetaUpdateHandler(c *gin.Context) {
 	opType := c.Request.FormValue("op")
 	fileSha1 := c.Request.FormValue("filehash")
@@ -45,7 +46,7 @@ func FileMetaUpdateHandler(c *gin.Context) {
 		return
 	}
 
-	rpcResp, err := userCli.UserFileRename(context.TODO(), &userProto.ReqUserFileRename{
+	rpcResp, err := userCli.UserFileRename(context.TODO(), &go_micro_service_user.ReqUserFileRename{
 		Username:    username,
 		Filehash:    fileSha1,
 		NewFileName: newFileName,

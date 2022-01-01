@@ -12,10 +12,10 @@ func Router() *gin.Engine {
 	router.Static("/static/", "./static")
 
 	// 注册
-	router.GET("/user/signup", handler.SignupHandler)
+	router.GET("/user/signup", handler.SignupInHandler)
 	router.POST("/user/signup", handler.DoSignupHandler)
 	// 登录
-	router.GET("/user/signin", handler.SigninHandler)
+	router.GET("/user/signin", handler.SignInHandler)
 	router.POST("/user/signin", handler.DoSigninHandler)
 	// 用户查询
 	router.POST("/user/info", handler.UserInfoHandler)
