@@ -2,7 +2,7 @@ package handler
 
 import (
 	cmn "LeiliNetdisk/common"
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 	"LeiliNetdisk/service/account/proto"
 	"LeiliNetdisk/util"
 	"github.com/gin-gonic/gin"

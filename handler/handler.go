@@ -2,7 +2,7 @@ package handler
 
 import (
 	cmn "LeiliNetdisk/common"
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 	dblayer "LeiliNetdisk/db"
 	"LeiliNetdisk/mq"
 	"LeiliNetdisk/store/ceph"

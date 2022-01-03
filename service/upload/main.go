@@ -2,7 +2,7 @@ package main
 
 import (
 	"LeiliNetdisk/common"
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 	"LeiliNetdisk/mq"
 	"LeiliNetdisk/route"
 	dbproxy "LeiliNetdisk/service/dbproxy/client"

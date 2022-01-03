@@ -2,7 +2,7 @@ package main
 
 import (
 	"LeiliNetdisk/common"
-	"LeiliNetdisk/config"
+	"LeiliNetdisk/config_example"
 	"LeiliNetdisk/mq"
 	dbproxy "LeiliNetdisk/service/dbproxy/client"
 	"LeiliNetdisk/service/transfert/process"
@@ -48,12 +48,12 @@ func startRPCService() {
 }
 
 func startTransferService() {
-	if !config.AsyncTransferEnable {
+	if !config_example.AsyncTransferEnable {
 		log.Println("异步转移文件功能目前被禁用，请检查相关配置")
 		return
 	}
 	log.Println("文件转移服务启动中，开始监听转移任务队列...")
 	mq.StartConsume(
-		config.TransOSSQueueName,
+		config_example.TransOSSQueueName,
 		"transfer_oss", process.Transfer)
 }

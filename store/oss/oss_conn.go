@@ -2,7 +2,7 @@ package oss
 
 
 import (
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 

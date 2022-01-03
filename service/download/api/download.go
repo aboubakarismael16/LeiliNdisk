@@ -9,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"LeiliNetdisk/common"
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 	dbcli "LeiliNetdisk/service/dbproxy/client"
 	"LeiliNetdisk/store/ceph"
 	"LeiliNetdisk/store/oss"
-	// dlcfg "filestore-server/service/download/config"
+	// dlcfg "filestore-server/service/download/config_example"
 )
 
 // DownloadURLHandler : 生成文件的下载地址

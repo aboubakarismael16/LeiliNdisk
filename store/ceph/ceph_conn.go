@@ -4,7 +4,7 @@ import (
 	"gopkg.in/amz.v1/aws"
 	"gopkg.in/amz.v1/s3"
 
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 )
 
 var cephConn *s3.S3

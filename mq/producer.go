@@ -1,7 +1,7 @@
 package mq
 
 import (
-	"LeiliNetdisk/config"
+	"LeiliNetdisk/config_example"
 	"github.com/streadway/amqp"
 	"log"
 )
@@ -14,7 +14,7 @@ var NotifyClose chan *amqp.Error
 
 func init() {
 	// 是否开启异步转移功能，开启时才初始化rabbitMQ连接
-	if !config.AsyncTransferEnable {
+	if !config_example.AsyncTransferEnable {
 		return
 	}
 	if InitChannel() {
@@ -39,7 +39,7 @@ func InitChannel() bool {
 		return true
 	}
 
-	conn, err := amqp.Dial(config.RabbitURL)
+	conn, err := amqp.Dial(config_example.RabbitURL)
 	if err != nil {
 		log.Println(err.Error())
 		return false

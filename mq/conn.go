@@ -1,7 +1,7 @@
 package mq
 
 import (
-	"LeiliNetdisk/config"
+	"LeiliNetdisk/config_example"
 	"github.com/streadway/amqp"
 	"log"
 )
@@ -11,16 +11,16 @@ var notifyClose chan *amqp.Error
 
 //UploadRabbitHost：更新mq host
 func UpdateRabbitHost(host string) {
-	config.RabbitURL = host
+	config_example.RabbitURL = host
 }
 
 // Init : 初始化MQ连接信息
 func Init() {
 	// 是否开启异步转移功能，开启时才初始化rabbitMQ连接
-	if !config.AsyncTransferEnable {
+	if !config_example.AsyncTransferEnable {
 		return
 	}
-	if initChannel(config.RabbitURL) {
+	if initChannel(config_example.RabbitURL) {
 		channel.NotifyClose(notifyClose)
 	}
 	// 断线自动重连
@@ -31,7 +31,7 @@ func Init() {
 				conn = nil
 				channel = nil
 				log.Printf("onNotifyChannelClosed: %+v\n", msg)
-				initChannel(config.RabbitURL)
+				initChannel(config_example.RabbitURL)
 			}
 		}
 	}()

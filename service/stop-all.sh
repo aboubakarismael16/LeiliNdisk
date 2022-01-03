@@ -2,9 +2,12 @@
 
 stop_process() {
     sleep 1
-    pid=`ps aux | grep -v grep | grep "service/bin" | grep $1 | awk '{print $2}'`
+    # shellcheck disable=SC2006
+    # shellcheck disable=SC2009
+    pid=`ps aux | grep -v grep | grep "service/bin" | grep "$1" | awk '{print $2}'`
     if [[ $pid != '' ]]; then
-	ps aux | grep -v grep | grep "service/bin" | grep $1 | awk '{print $2}' | xargs kill
+	# shellcheck disable=SC2009
+	ps aux | grep -v grep | grep "service/bin" | grep "$1" | awk '{print $2}' | xargs kill
         echo -e "\033[32m已关闭: \033[0m" "$1"
         return 1
     else
@@ -26,7 +29,7 @@ dbproxy
 # 关闭service
 for sname in $services
 do
-    stop_process $sname
+    stop_process "$sname"
 done
 
 echo "执行完毕."

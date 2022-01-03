@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"LeiliNetdisk/common"
-	"LeiliNetdisk/config"
-	cfg "LeiliNetdisk/config"
+	"LeiliNetdisk/config_example"
+	cfg "LeiliNetdisk/config_example"
 	proto "LeiliNetdisk/service/account/proto"
 	dbcli "LeiliNetdisk/service/dbproxy/client"
 	"LeiliNetdisk/util"
@@ -55,7 +55,7 @@ func (u *User) Signin(ctx context.Context, req *proto.ReqSignin, res *proto.Resp
 	username := req.Username
 	password := req.Password
 
-	encPasswd := util.Sha1([]byte(password + config.PasswordSalt))
+	encPasswd := util.Sha1([]byte(password + config_example.PasswordSalt))
 
 	// 1. 校验用户名及密码
 	dbResp, err := dbcli.UserSignin(username, encPasswd)

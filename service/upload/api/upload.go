@@ -3,7 +3,7 @@ package api
 import (
 	_ "LeiliNetdisk/cache/redis"
 	cmn "LeiliNetdisk/common"
-	cfg "LeiliNetdisk/config"
+	cfg "LeiliNetdisk/config_example"
 	_ "LeiliNetdisk/db"
 	"LeiliNetdisk/meta"
 	"LeiliNetdisk/mq"
