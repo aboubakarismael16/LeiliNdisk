@@ -1,80 +1,80 @@
 package handler
 
 import (
-	cmn "LeiliNetdisk/common"
-	cfg "LeiliNetdisk/config_example"
-	"LeiliNetdisk/service/account/proto"
+	"LeiliNetdisk/common"
 	"LeiliNetdisk/util"
-	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro"
-	"golang.org/x/net/context"
+	"context"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	micro "github.com/micro/go-micro"
+
+	cmn "LeiliNetdisk/common"
+	userProto "LeiliNetdisk/service/account/proto"
+	dlProto "LeiliNetdisk/service/download/proto"
+	upProto "LeiliNetdisk/service/upload/proto"
 )
 
-
 var (
-	userCli proto.UserService
+	userCli userProto.UserService
+	upCli   upProto.UploadService
+	dlCli   dlProto.DownloadService
 )
 
 func init() {
-	//registry := consul.NewRegistry(func(options *registry.Options) {
-	//    options.Addrs = []string{
-	//        "192.168.0.112:8500",
-	//        //"172.17.0.5:8500",
-	//    }
-	//})
-	// 创建一个新的服务
-	service := micro.NewService(
-		//micro.Name("user.Client"),
-		//micro.Registry(registry)
-	)
-	// 初始化
+	service := micro.NewService()
+	// 初始化， 解析命令行参数等
 	service.Init()
 
-	// 创建 userClient 客户端
-	userCli = proto.NewUserService("go.micro.service.user", service.Client())
+	// 初始化一个account服务的客户端
+	userCli = userProto.NewUserService("go.micro.service.user", service.Client())
+	// 初始化一个upload服务的客户端
+	upCli = upProto.NewUploadService("go.micro.service.upload", service.Client())
+	// 初始化一个download服务的客户端
+	dlCli = dlProto.NewDownloadService("go.micro.service.download", service.Client())
 }
 
-//SignupInHandler：处理用户注册GET请求
-func SignupInHandler(c *gin.Context) {
+// SignupHandler : 响应注册页面
+func SignupHandler(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/static/view/signup.html")
 }
 
-//DoSignupHandler：处理用户注册POST请求
+// DoSignupHandler : 处理注册post请求
 func DoSignupHandler(c *gin.Context) {
 	username := c.Request.FormValue("username")
 	passwd := c.Request.FormValue("password")
 
-	resp, err := userCli.Signup(context.TODO(), &proto.ReqSignup{
+	resp, err := userCli.Signup(context.TODO(), &userProto.ReqSignup{
 		Username: username,
 		Password: passwd,
 	})
+
 	if err != nil {
 		log.Println(err.Error())
 		c.Status(http.StatusInternalServerError)
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": resp.Code,
 		"msg":  resp.Message,
 	})
 }
 
-//SignInHandler:处理用户登录GET请求
-func SignInHandler(c *gin.Context) {
-	c.Redirect(http.StatusFound, "/static/view/signup.html")
+// SigninHandler : 响应登录页面
+func SigninHandler(c *gin.Context) {
+	c.Redirect(http.StatusFound, "/static/view/signin.html")
 }
 
-//DoSigninHandler:处理用户登录POST请求
+// DoSigninHandler : 处理登录post请求
 func DoSigninHandler(c *gin.Context) {
 	username := c.Request.FormValue("username")
 	password := c.Request.FormValue("password")
-	encPassword := util.Sha1([]byte(password + cfg.PasswordSalt))
 
-	rpcResp, err := userCli.Signin(context.TODO(), &proto.ReqSignin{
+	rpcResp, err := userCli.Signin(context.TODO(), &userProto.ReqSignin{
 		Username: username,
-		Password: encPassword,
+		Password: password,
 	})
 
 	if err != nil {
@@ -91,8 +91,25 @@ func DoSigninHandler(c *gin.Context) {
 		return
 	}
 
+	// 动态获取上传入口地址
+	upEntryResp, err := upCli.UploadEntry(context.TODO(), &upProto.ReqEntry{})
+	if err != nil {
+		log.Println(err.Error())
+	} else if upEntryResp.Code != cmn.StatusOK {
+		log.Println(upEntryResp.Message)
+	}
+
+	// 动态获取下载入口地址
+	dlEntryResp, err := dlCli.DownloadEntry(context.TODO(), &dlProto.ReqEntry{})
+	if err != nil {
+		log.Println(err.Error())
+	} else if dlEntryResp.Code != cmn.StatusOK {
+		log.Println(dlEntryResp.Message)
+	}
+
+	// 登录成功，返回用户信息
 	cliResp := util.RespMsg{
-		Code: int(cmn.StatusOK),
+		Code: int(common.StatusOK),
 		Msg:  "登录成功",
 		Data: struct {
 			Location      string
@@ -101,35 +118,41 @@ func DoSigninHandler(c *gin.Context) {
 			UploadEntry   string
 			DownloadEntry string
 		}{
-			Location:      "http://" + c.Request.Host + "/static/view/home.html",
+			Location:      "/static/view/home.html",
 			Username:      username,
 			Token:         rpcResp.Token,
-			UploadEntry:   cfg.UploadLBHost,
-			DownloadEntry: cfg.DownloadLBHost,
+			UploadEntry:   upEntryResp.Entry,
+			DownloadEntry: dlEntryResp.Entry,
 		},
 	}
 	c.Data(http.StatusOK, "application/json", cliResp.JSONBytes())
 }
 
-//UserInfoHandler:查询用户信息
+// UserInfoHandler ： 查询用户信息
 func UserInfoHandler(c *gin.Context) {
-	//1.解析参数
+	// 1. 解析请求参数
 	username := c.Request.FormValue("username")
-	//2.查询用户信息
-	resp, err := userCli.UserInfo(context.TODO(), &proto.ReqUserInfo{
+
+	resp, err := userCli.UserInfo(context.TODO(), &userProto.ReqUserInfo{
 		Username: username,
 	})
+
 	if err != nil {
 		log.Println(err.Error())
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	//3.组装并且相应用户数据
+	// 3. 组装并且响应用户数据
 	cliResp := util.RespMsg{
 		Code: 0,
 		Msg:  "OK",
-		Data: resp,
+		Data: gin.H{
+			"Username": username,
+			"SignupAt": resp.SignupAt,
+			// TODO: 完善其他字段信息
+			"LastActive": resp.LastActiveAt,
+		},
 	}
 	c.Data(http.StatusOK, "application/json", cliResp.JSONBytes())
 }
