@@ -4,15 +4,15 @@
   <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
   <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
-        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossOrigin="anonymous">
 
   <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
-        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossOrigin="anonymous">
 
   <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
-          integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+          integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossOrigin="anonymous">
   </script>
 
   <script src="/static/js/auth.js"></script>
@@ -43,7 +43,7 @@
       <td style="text-align: top;vertical-align: top;">
         <div style="width:100%;">
           <span>文件列表</span>
-          <button class="btn btn-primary" onclick="toUploadFile()" style="margin:5px;">上传文件
+          <button className="btn btn-primary" onClick="toUploadFile()" style="margin:5px;">上传文件
           </button>
           <div style="width:100%;height: 1px;background:rgb(48, 143, 252);"></div>
         </div>
@@ -73,7 +73,7 @@
     var username = document.getElementById('username');
     $.ajax({
       url: "/user/info?" + queryParams(),
-      type: "POST",
+      type: "GET",
       error: function (err) {
         alert(JSON.stringify(err));
       },
@@ -95,7 +95,7 @@
   function updateFileList() {
     $.ajax({
       url: "/file/query?" + queryParams(),
-      type: "POST",
+      type: "GET",
       data: {
         limit: 15
       },
@@ -112,10 +112,13 @@
         }
 
         var dlHost = 'http://localhost:8080';
-        // var dlHost = 'http://192.168.105.4:8080';
         var dlEntry = localStorage.getItem('downloadEntry');
         if (dlEntry != '') {
-          dlHost = 'http://' + dlEntry;
+          if (dlEntry.indexOf('http:') < 0) {
+            dlHost = 'http://' + dlEntry;
+          } else {
+            dlHost = dlEntry;
+          }
         }
 
         var downloadHtml = '<button class="btn btn-info" ' +
@@ -123,7 +126,7 @@
                 'onClick = "downloadFile(\'' + dlHost + '/file/downloadurl?filehash={0}&{1}\')">下载</button>';
         var renameFileHtml = '<button class="btn btn-warning" ' +
                 'style="height:30px;margin:5px 3px;"' +
-                'onClick = "renameFile(\'{0}\',\'{1}\',\'http://localhost:8080/file/' +
+                'onClick = "renameFile(\'{0}\',\'{1}\',\'http://apigw.fileserver.com/file/' +
                 'update?op=0&filehash={2}&{3}\')">重命名</button>';
         var cdlFileHtml = '<button class="btn btn-info" ' +
                 'style="height:30px;margin:5px 3px;"' +
@@ -215,6 +218,7 @@
         alert(msg);
       },
       success: function (body) {
+        debugger;
         alert("文件名修改成功");
         window.location.href = '/static/view/home.html';
       }
@@ -223,4 +227,3 @@
 </script>
 
 </html>
-

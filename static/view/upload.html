@@ -38,8 +38,8 @@
   </div>
   <div style="width:60%;height:30%;text-align:center;margin: 50px auto;">
     <form id="upForm" action="#" method="post" enctype="multipart/form-data">
-      <input id="file" name="file" type="file" class="file" data-msg-placeholder="选择文件">
-      <!-- <input id="file" type="file" name="file" /> -->
+      <!-- <input id="file" name="file" type="file" class="file" data-msg-placeholder="选择文件"> -->
+      <input id="file" type="file" name="file" />
       <button id="上传" type="button" onclick="onUpload();">upload</button>
     </form>
   </div>
@@ -56,10 +56,15 @@
   // });
 
   function onUpload() {
+    debugger;
     var upUrl = "/file/upload?" + queryParams();
     var upEntry = localStorage.getItem("uploadEntry");
-    if (upEntry != "") {
-      upUrl = "http://" + upEntry + "/file/upload?" + queryParams();
+    if (upEntry != "" ) {
+      if (upEntry.indexOf("http:")>=0) {
+        upUrl = upEntry + "/file/upload?" + queryParams();
+      } else {
+        upUrl = "http://" + upEntry + "/file/upload?" + queryParams();
+      }
     }
     $.ajax({
       url: upUrl,
@@ -69,9 +74,11 @@
       processData: false,
       contentType: false,
       error: function (err) {
+        debugger;
         alert('请求报错信息: ' + JSON.stringify(err));
       },
       success: function (res) {
+        debugger;
         alert('请求返回结果: ' + JSON.stringify(res));
         if (res.code == 0) {
           window.location.href = "/static/view/home.html";

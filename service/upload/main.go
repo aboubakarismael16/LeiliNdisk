@@ -1,7 +1,6 @@
 package main
 
 import (
-	"LeiliNetdisk/common"
 	cfg "LeiliNetdisk/config_example"
 	"LeiliNetdisk/mq"
 	"LeiliNetdisk/route"
@@ -11,6 +10,8 @@ import (
 	"fmt"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/consul"
 	"log"
 	"time"
 )
@@ -28,11 +29,20 @@ func startAPIService() {
 }
 
 func startRPCService() {
+
+	registry := consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string {
+			"127.0.0.1:8500",
+		}
+	})
+
 	service := micro.NewService(
 		micro.Name("go.mirco.service.upload"),  //服务名称
 		micro.RegisterInterval(time.Second*10), //TTL 指定从上一次心跳开始，超过这个时间服务就会被移除
 		micro.RegisterInterval(time.Second*5),  // 让服务在指定时间内重新注册，保持TTL获取的注册时间有效
-		micro.Flags(common.CustomFlags...))
+		micro.Registry(registry),
+		//micro.Flags(common.CustomFlags...),
+   )
 
 	service.Init(
 		micro.Action(func(context *cli.Context) {
@@ -42,7 +52,8 @@ func startRPCService() {
 				log.Println("custom mq address: " + mqhost)
 				mq.UpdateRabbitHost(mqhost)
 			}
-		}))
+		}),
+	)
 
 	//初始化dbproxy client
 	dbproxy.Init(service)

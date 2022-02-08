@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/consul"
 	"log"
 	"time"
 
@@ -11,10 +13,18 @@ import (
 )
 
 func startRpcService() {
+
+	registry := consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			"127.0.0.1:8500",
+		}
+	})
+
 	service := micro.NewService(
 		micro.Name("go.micro.service.dbproxy"), // 在注册中心中的服务名称
 		micro.RegisterTTL(time.Second*10),      // 声明超时时间, 避免consul不主动删掉已失去心跳的服务节点
 		micro.RegisterInterval(time.Second*5),
+		micro.Registry(registry),
 	)
 	service.Init()
 

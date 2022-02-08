@@ -2,7 +2,7 @@ package config_example
 
 const (
 	//UploadServiceHost:上传服务监听的地址
-	UploadServiceHost = "0.0.0.0:8080"
+	UploadServiceHost = "0.0.0.0:8085"
 	// UploadLBHost: 上传服务LB地址
 	UploadLBHost = "http://localhost:8080"
 	// DownloadLBHost: 下载服务LB地址

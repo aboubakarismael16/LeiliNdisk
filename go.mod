@@ -36,6 +36,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lucas-clemente/quic-go v0.14.1 // indirect
 	github.com/micro/go-micro v1.18.0
+	github.com/micro/go-micro/v2 v2.9.1 // indirect
 	github.com/miekg/dns v1.1.27 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.6 // indirect
 	github.com/onsi/ginkgo v1.15.0 // indirect

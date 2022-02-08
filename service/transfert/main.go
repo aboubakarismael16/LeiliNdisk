@@ -8,6 +8,8 @@ import (
 	"LeiliNetdisk/service/transfert/process"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/consul"
 	"log"
 	"time"
 )
@@ -21,11 +23,20 @@ func main() {
 }
 
 func startRPCService() {
+
+	registry := consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			"127.0.0.1:8500",
+		}
+	})
+
 	service := micro.NewService(
 		micro.Name("go.micro.service.transfer"),
 		micro.RegisterTTL(time.Second*10),
+		micro.Registry(registry),
 		micro.RegisterInterval(time.Second*5),
 		micro.Flags(common.CustomFlags...))
+
 	service.Init(
 		micro.Action(func(context *cli.Context) {
 			//检查是否有指定的mqHost

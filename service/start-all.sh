@@ -18,9 +18,9 @@ check_process() {
 # 编译service可执行文件
 build_service() {
     # shellcheck disable=SC2086
-    go build -o service/bin/$1 service/"$1"/main.go
+    go build -o home/aboubakar/go/src/LeiliNdisk/service/bin/$1 service/"$1"/main.go
     # shellcheck disable=SC2006
-    resbin=`ls service/bin/ | grep "$1"`
+    resbin=`ls home/aboubakar/go/src/LeiliNdisk/service/bin/ | grep "$1"`
     echo -e "\033[32m 编译完成: \033[0m service/bin/$resbin"
 }
 

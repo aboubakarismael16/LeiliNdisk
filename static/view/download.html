@@ -60,7 +60,8 @@
         var name = req.getResponseHeader("Content-Disposition");
         filename = name.match(/attachment; filename="(.*)"/)[1];
 
-        if (req.readyState === 4) {}
+        if (req.readyState === 4) {
+        }
       };
 
       req.onload = function (oEvent) {
@@ -106,6 +107,6 @@
 
 <body>
 <div id="progressing">[下载进度] 0%</div>
-<button id="ctlbtn" class="btn btn-primary" onclick="abortDownload()" style="margin:5px;">暂停/继续
+<button id="ctlbtn" className="btn btn-primary" onClick="abortDownload()" style="margin:5px;">暂停/继续
 </button>
 </body>
