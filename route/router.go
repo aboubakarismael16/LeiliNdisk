@@ -11,8 +11,21 @@ func Router() *gin.Engine {
 	//处理静态资源
 	router.Static("/static/", "./static")
 
+	// 无需验证就能访问的接口
+	router.GET("/user/signup",handler.SignupHandler)
+	router.POST("/user/signup",handler.DoSignupHandler)
+	router.GET("/user/signin",handler.SignInHandler)
+	router.POST("/user/signin",handler.DoSignInHandler)
+	router.GET("/", handler.SignInHandler)
+
+
 	//加入中间件，用于效验token的拦截器
 	router.Use(handler.HTTPInterceptor())
+
+	// Use 中间件之后的接口，都需要通过拦截器
+	// 用户信息
+	router.POST("/user/info",handler.UserInfoHandler)
+
 
 	//use之后的所有handler都会进去拦截
 
